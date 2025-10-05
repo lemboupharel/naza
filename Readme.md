@@ -1,7 +1,7 @@
 # Get_forest_pulse 🌍
 
 **Team:** GET  
-**NASA Space Apps Challenge 2025
+**NASA Space Apps Challenge 2025**
 
 ---
 
