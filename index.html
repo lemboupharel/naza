@@ -17,6 +17,7 @@
       --glass:   rgba(255,255,255,0.05);
       --transition: all 0.3s ease-in-out;
     }
+
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, var(--dark), var(--accent));
@@ -28,13 +29,20 @@
       margin: 0;
       padding: 0;
     }
+
     h1 { 
       margin-top: 2rem;
       background: linear-gradient(to right, var(--primary), var(--accent));
       -webkit-background-clip: text;
       color: transparent;
       text-align: center;
+      transition: transform 0.5s ease;
     }
+
+    h1:hover {
+      transform: scale(1.05) rotate(-1deg);
+    }
+
     #map {
       width: 90%;
       max-width: 1000px;
@@ -43,10 +51,16 @@
       border-radius: 15px;
       border: 2px solid rgba(255,255,255,0.2);
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
     }
+
+    #map:hover {
+      transform: scale(1.01);
+    }
+
     .btn-send {
       display: block;
-      margin: 1rem auto 3rem;
+      margin: 1rem auto 2rem;
       background: var(--primary);
       color: var(--dark);
       border: none;
@@ -56,18 +70,69 @@
       cursor: pointer;
       transition: var(--transition);
     }
+
     .btn-send:hover {
       background: var(--accent);
       transform: translateY(-2px) scale(1.05);
     }
+
+    #video, #weather {
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    #video {
+      margin: 1rem auto;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.2);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+
+    #weather {
+      width: 90%;
+      max-width: 500px;
+      margin: 1rem auto 3rem;
+      padding: 1rem 1.5rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: var(--light);
+    }
+
+    #loader {
+      display: none;
+      border: 5px solid rgba(255,255,255,0.2);
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     footer {
       text-align: center;
       margin-bottom: 2rem;
       font-size: 0.9rem;
       color: rgba(255,255,255,0.6);
     }
-    .leaflet-container {
-      border-radius: 15px;
+
+    .leaflet-marker-icon.bounce {
+      animation: bounce 0.5s;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0); }
     }
   </style>
 </head>
@@ -77,6 +142,10 @@
   <div id="map"></div>
   <button class="btn-send" id="sendBtn">Envoyer la position</button>
 
+  <div id="loader"></div>
+  <video id="video" width="512" height="512" controls></video>
+  <div id="weather">Les conditions météorologiques s'afficheront ici après sélection.</div>
+
   <footer>&copy; <span id="year"></span> Map Selector. Tous droits réservés.</footer>
 
   <!-- Bootstrap JS -->
@@ -85,9 +154,12 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+    const videoEl = document.getElementById("video");
+    const weatherEl = document.getElementById("weather");
+    const loaderEl = document.getElementById("loader");
 
     // Initialize map
-    const map = L.map('map').setView([0, 0], 2); // Centered at world
+    const map = L.map('map').setView([0, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -101,6 +173,10 @@
       selectedMarker = L.marker(selectedLatLng).addTo(map)
         .bindPopup(`Lat: ${selectedLatLng.lat.toFixed(5)}, Lng: ${selectedLatLng.lng.toFixed(5)}`)
         .openPopup();
+
+      // Add bounce animation
+      selectedMarker._icon.classList.add('bounce');
+      setTimeout(() => selectedMarker._icon.classList.remove('bounce'), 500);
     });
 
     document.getElementById('sendBtn').addEventListener('click', async () => {
@@ -109,45 +185,66 @@
         return;
       }
 
-      const data = {
-        latitude: selectedLatLng.lat,
-        longitude: selectedLatLng.lng
-      };
+      loaderEl.style.display = 'block';
+      videoEl.style.display = 'none';
+      weatherEl.style.display = 'none';
 
-      /*
+      const lat = selectedLatLng.lat;
+      const lon = selectedLatLng.lng;
+      const years = [2023, 2024, 2025];
+
       try {
-        const response = await fetch('https://api-meteo-git-main-tsanga-awanas-projects.vercel.app/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+        // Generate video
+        const response = await fetch("http://54.166.182.107:5000/generate-video", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat, lon, years })
         });
-        alert("Position envoyée avec succès !");
-        const trueRes = await response.json()
-        console.log(trueRes)
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert("Erreur vidéo: " + error.error);
+          loaderEl.style.display = 'none';
+          return;
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        videoEl.src = url;
+        videoEl.style.display = 'block';
+        setTimeout(() => videoEl.style.opacity = 1, 50); // fade in
+
       } catch (err) {
-        alert("Erreur lors de l'envoi de la position");
-      }*/
+        console.error("Erreur vidéo:", err);
+        weatherEl.textContent = "Impossible de générer la vidéo.";
+      }
 
       try {
-  const apiKey = "f6e6398106b758621105959e4add914e"; // Remplacez par votre clé OpenWeatherMap
-  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${selectedLatLng.lat}&lon=${selectedLatLng.lng}&appid=${apiKey}&units=metric&lang=fr`;
+        // Fetch weather
+        const apiKey = "f6e6398106b758621105959e4add914e";
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=fr`;
+        const response = await fetch(weatherUrl);
+        if (!response.ok) throw new Error("Impossible de récupérer les données météo");
 
-  const response = await fetch(weatherUrl);
-  if (!response.ok) throw new Error("Impossible de récupérer les données météo");
+        const data = await response.json();
+        weatherEl.innerHTML = `
+          <strong>Météo à ${data.name}, ${data.sys.country}:</strong><br>
+          Température: ${data.main.temp} °C<br>
+          Conditions: ${data.weather[0].description}<br>
+          Humidité: ${data.main.humidity} %<br>
+          Vent: ${data.wind.speed} m/s
+        `;
+        weatherEl.style.display = 'block';
+        setTimeout(() => weatherEl.style.opacity = 1, 50); // fade in
 
-  const weatherData = await response.json();
-  
-  // Affichage console ou sur votre interface
-  console.log(weatherData);
-
-  // Exemple: afficher un message à l'utilisateur
-  alert(`Météo à l'emplacement sélectionné:\n${weatherData.name}, ${weatherData.sys.country}\nTempérature: ${weatherData.main.temp}°C\nConditions: ${weatherData.weather[0].description}`);
-  
-} catch (err) {
-  console.error(err);
-  alert("Erreur lors de la récupération des données météo");
-}
-
+      } catch (err) {
+        console.error("Erreur météo:", err);
+        weatherEl.textContent = "Impossible de récupérer les conditions météorologiques.";
+        weatherEl.style.display = 'block';
+        setTimeout(() => weatherEl.style.opacity = 1, 50);
+      } finally {
+        loaderEl.style.display = 'none';
+      }
     });
   </script>
 </body>
