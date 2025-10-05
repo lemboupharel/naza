@@ -195,7 +195,7 @@
 
       try {
         // Generate video
-        const response = await fetch("http://54.166.182.107:5000/generate-video", {
+        const response = await fetch("https://darkmind.fin-tech.com/generate-video", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ lat, lon, years })
