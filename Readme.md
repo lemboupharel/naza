@@ -31,11 +31,6 @@ The project combines modern web technologies—**Leaflet.js** for map interactio
 - Responsive design compatible with desktop and mobile.  
 - Dark theme for a modern and visually comfortable experience.
 
----
-
-## 📦 Repository Structure
-
-air_quality_pulse/ ├─ index.html              # Main web interface ├─ README.md               # Project description and instructions └─ assets/                 # Optional: images, icons, or additional styles
 
 ---
 
