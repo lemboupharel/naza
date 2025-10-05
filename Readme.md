@@ -2,7 +2,7 @@
 # Air Quality Pulse
 
 **Team:** GET  
-**NASA Space Apps Challenge 2025  
+**NASA Space Apps Challenge 2025**
 
 ---
 
