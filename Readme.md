@@ -1,82 +1,106 @@
-# Get_forest_pulse 🌍
+
+# Air Quality Pulse
 
 **Team:** GET  
-**NASA Space Apps Challenge 2025**
+**NASA Space Apps Challenge 2025  
 
 ---
 
 ## 🌍 Project Overview
 
-*Get_forest_pulse* is an interactive and animated visualization project showing deforestation and fire dynamics in Cameroon. By combining Terra satellite images (MODIS True Color) and MODIS Active Fire data, the project allows users to visualize:
+*Air Quality Pulse* is an interactive web application that visualizes real-time air quality and weather data for any location worldwide. Users can select a point on a global map, and the app retrieves weather information using OpenWeatherMap, highlighting temperature, conditions, and environmental context.
 
-- Forest cover loss from 2001 to 2022  
-- Active fire hotspots year by year  
-- Combined forest loss and fire impact to highlight overall environmental effects  
-
-The project provides an **interactive interface** where users can **click on the map to select a location**, then get **current weather information** and generate visualizations for that point.
+The project combines modern web technologies—**Leaflet.js** for map interaction, **Bootstrap** for responsive design, and the **OpenWeatherMap API**—to deliver an intuitive interface for environmental awareness and educational purposes.
 
 ---
 
 ## 🎯 Objectives
 
-- Automatically download MODIS True Color and Active Fire images for Cameroon  
-- Generate GIF and MP4 animations showing forest loss, fire hotspots, and their combination  
-- Provide an interactive exploration tool via a Leaflet web map  
-- Deliver a ready-to-use tool for presentations, pitch videos, or educational projects  
+- Allow users to select any location on a world map.  
+- Retrieve real-time weather data for the selected point.  
+- Display temperature, weather conditions, and other key environmental data.  
+- Provide a visually appealing, easy-to-use interface suitable for educational outreach.
 
 ---
 
-## ⚙️ How It Works
+## ⚙️ Features
 
-1. **Interactive Web Interface:**  
-   Users select any point on the world map (focus on Cameroon).  
-2. **“Send Location” Button:**  
-   - Retrieves the GPS coordinates of the selected point  
-   - Calls the OpenWeatherMap API to display current weather at that location  
-3. **Python All-in-One Script (`forest_pulse_all_in_one.py`):**  
-   - Automatically downloads MODIS True Color and Active Fire images for each year  
-   - Generates animated GIFs:  
-     - Forest cover (forest_loss_cameroon.gif)  
-     - Fire hotspots (fires_cameroon.gif)  
-     - Combined forest + fires (forest_fire_cameroon.gif)  
-   - Converts GIFs to MP4 videos for easy integration in presentations or pitch videos  
+- Interactive Leaflet map with click-to-select functionality.  
+- Marker placement with latitude and longitude popup.  
+- Fetches weather data dynamically via OpenWeatherMap API.  
+- Responsive design compatible with desktop and mobile.  
+- Dark theme for a modern and visually comfortable experience.
 
 ---
 
-## 📊 Data Sources
+## 📦 Repository Structure
 
-- **MODIS Terra Corrected Reflectance True Color** (NASA GIBS / Worldview)  
-- **MODIS Terra Active Fire True Color** (NASA GIBS / Worldview)  
-- **OpenWeatherMap API** for real-time weather  
-
-All data are publicly available.
+air_quality_pulse/ ├─ index.html              # Main web interface ├─ README.md               # Project description and instructions └─ assets/                 # Optional: images, icons, or additional styles
 
 ---
 
-## 🎬 Usage
+## 🛠️ Getting Started
 
-1. Open `index.html` in a web browser to access the interactive map.  
-2. Click on a location and press **Send Location** to view local weather.  
-3. Run `forest_pulse_all_in_one.py` to automatically generate GIF and MP4 animations for Cameroon.  
-4. Use the animations for presentations, pitch videos, or educational projects.
+### 1. Clone the repository
 
----
+```bash
+git clone https://github.com/your-username/air_quality_pulse.git
+cd air_quality_pulse
 
-## 🌱 Impact
+2. Open index.html
 
-- Raises awareness of deforestation and wildfires in Cameroon  
-- Shows the link between forest loss and fire activity  
-- Provides an interactive, visual tool for education and scientific communication  
+Simply open index.html in your browser. No server setup required.
 
----
+3. Add your OpenWeatherMap API Key
 
-## 📜 License
+Replace "YOUR_OPENWEATHERMAP_KEY" in the HTML file with your own API key:
 
-Open-source project under the **MIT License**. NASA Earthdata imagery is publicly available.
+const apiKey = "YOUR_OPENWEATHERMAP_KEY";
+
 
 ---
 
-## 🏆 Team
+🎬 Usage
 
-**GET**  
+1. Open the app in a web browser.
+
+
+2. Click anywhere on the map to place a marker.
+
+
+3. Press Send Location to fetch and display the weather for that location.
+
+
+4. The popup and alert will show city name, country, temperature, and conditions.
+
+
+
+
+---
+
+🌱 Impact
+
+Promotes awareness of environmental conditions worldwide.
+
+Encourages exploration of air quality and weather data.
+
+Provides an educational tool for teaching about climate and environmental monitoring.
+
+
+
+---
+
+📜 License
+
+This project is open-source and shared under the MIT License.
+
+Weather data is retrieved via OpenWeatherMap API, which is publicly available.
+
+
+---
+
+🏆 Team
+
+GET – Global Earth Team
 NASA Space Apps Challenge 2025
+
